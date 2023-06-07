@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Verificar Imagen</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
     <style>
         body {
             background-color: #222;
@@ -39,83 +40,100 @@
     </style>
 </head>
 <body>
+
+    <div class="container">
+        <ul class="nav nav-pills" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="pill" href="https://mendozaweb.github.io/test2/">Deep link</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="pill" href="view.html">ImgSku</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="pill" href="#nomen">Loading</a>
+            </li>
+        </ul>
+    </div>
+
     <div class="container">
         <h2>Verificar Imagen</h2>
         <div class="form-group">
             <label for="image-link">Enlace de la Imagen:</label>
-            <input type="text" id="image-link" placeholder="Ingrese el número del SKU">
+            <input type="text" id="image-link" placeholder="Ingrese el número del SKU" class="form-control">
         </div>
-        <button id="verify-btn">Verificar</button>
-        <div id="result"></div>
+        <button id="verify-btn" class="btn btn-primary">Verificar</button>
+        <div id="result" class="mt-3"></div>
         <div class="preview" id="image-preview"></div>
         <h3>URLs Acumuladas:</h3>
-        <textarea id="urls-acumuladas" rows="5" readonly></textarea>
-        <button id="copy-btn">Copiar URLs</button>
+        <textarea id="urls-acumuladas" rows="5" readonly class="form-control"></textarea>
+        <button id="copy-btn" class="btn btn-secondary mt-3">Copiar URLs</button>
+    </div>
 
-        <script>
-            var dateTime = "";
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"></script>
+    <script>
+        var dateTime = "";
 
-            document.getElementById("verify-btn").addEventListener("click", function () {
-                var imageLinkInput = document.getElementById("image-link");
-                var imageLinkValue = imageLinkInput.value;
+        $(document).ready(function () {
+            $("#verify-btn").click(function () {
+                var imageLinkValue = $("#image-link").val();
                 var imageUrl = "https://s7d2.scene7.com/is/image/Tottus/" + imageLinkValue;
-                var imagePreview = document.getElementById("image-preview");
-                var result = document.getElementById("result");
-                var urlsAcumuladas = document.getElementById("urls-acumuladas");
+                var imagePreview = $("#image-preview");
+                var result = $("#result");
+                var urlsAcumuladas = $("#urls-acumuladas");
 
                 // Limpiar resultados anteriores
-                imagePreview.innerHTML = "";
-                result.innerHTML = "";
+                imagePreview.html("");
+                result.html("");
 
                 // Verificar si el enlace está vacío
                 if (imageLinkValue.trim() === "") {
-                    result.innerHTML = "Por favor, ingrese un número o combinación válida.";
+                    result.html("Por favor, ingrese un número o combinación válida.");
                     return;
                 }
 
                 // Crear elemento de imagen
-                var image = document.createElement("img");
-                image.src = imageUrl;
+                var image = $("<img>").attr("src", imageUrl);
 
                 // Verificar si la imagen está disponible
-                image.addEventListener("load", function () {
-                    imagePreview.appendChild(image);
-                    result.innerHTML = "El enlace de la imagen está activo.";
+                image.on("load", function () {
+                    imagePreview.html(image);
+                    result.html("El enlace de la imagen está activo.");
 
                     if (dateTime === "") {
                         dateTime = new Date().toLocaleString();
-                        urlsAcumuladas.value += "=== " + dateTime + " ===\n";
+                        urlsAcumuladas.val(urlsAcumuladas.val() + "=== " + dateTime + " ===\n");
                     }
 
-                    urlsAcumuladas.value += imageUrl + "\n";
+                    urlsAcumuladas.val(urlsAcumuladas.val() + imageUrl + "\n");
                 });
 
-                image.addEventListener("error", function () {
-                    result.innerHTML = "El enlace de la imagen no está activo.";
+                image.on("error", function () {
+                    result.html("El enlace de la imagen no está activo.");
                 });
 
                 // Limpiar el valor del input
-                imageLinkInput.value = "";
+                $("#image-link").val("");
             });
-            
-            document.getElementById("copy-btn").addEventListener("click", function () {
-                var urlsAcumuladas = document.getElementById("urls-acumuladas");
 
-                if (urlsAcumuladas.value.trim() !== "") {
+            $("#copy-btn").click(function () {
+                var urlsAcumuladas = $("#urls-acumuladas");
+
+                if (urlsAcumuladas.val().trim() !== "") {
                     urlsAcumuladas.select();
                     document.execCommand("copy");
-                    urlsAcumuladas.value = "";
+                    urlsAcumuladas.val("");
                     dateTime = ""; // Restablecer la fecha y hora al copiar
                     location.reload(); // Actualizar la página
                 }
             });
 
-            document.getElementById("image-link").addEventListener("keydown", function (event) {
+            $("#image-link").keydown(function (event) {
                 if (event.key === "Enter") {
-                    document.getElementById("verify-btn").click();
+                    $("#verify-btn").click();
                 }
             });
-        </script>
-    </div>
+        });
+    </script>
 </body>
 </html>
